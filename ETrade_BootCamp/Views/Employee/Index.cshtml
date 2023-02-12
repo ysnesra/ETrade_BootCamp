@@ -1,0 +1,41 @@
+﻿@using ETrade_BootCamp.ViewModels
+
+@{
+    ViewData["Title"] = "Employee";
+}
+
+@model List<EmployeeDTO>
+
+<div class="text-center">
+    <h1 class="display-4">Personel Listesi</h1>
+</div>
+
+@*@Html.ActionLink("Yeni Personel", "Yeni","Personel", null, new {@class="btn btn-success" })*@
+<a asp-action="Create" asp-controller="Employee" class="btn btn-danger">Yeni Personel</a>
+
+<table class=" table table-bordered">
+    <thead>
+        <tr>
+            <th>Ad </th>
+            <th>Soyad </th>
+            <th>Ünvan</th>
+            <th>Siparişler </th>
+            <th>Sorumlu Olduğu Bölgeler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in Model)
+        {
+            <tr>
+                <td>@employee.FirstName </td>
+                <td>@employee.LastName </td>
+                <td>@employee.Title </td>               
+                <td><a asp-action="Index" asp-controller="Order" asp-route-employeeId="@employee.EmployeeId" class="btn btn-warning">Siparişleri</a></td>
+                <td><a asp-action="Index" asp-controller="Territory" asp-route-employeeId="@employee.EmployeeId" class="btn btn-success">Sorumlu Bölgeleri</a></td>               
+                @*<td>@Html.ActionLink("Siparişleri", "Index","Order", new { employeeId = employee.EmployeeId }, new { @class = "btn btn-warning" })  </td>*@
+                @*<td>@Html.ActionLink("Sorumlu Bölgeleri", "Index","Territory", new { employeeId = employee.EmployeeId }, new { @class = "btn btn-primary" }) </td>*@
+
+            </tr>
+        }
+    </tbody>
+</table>

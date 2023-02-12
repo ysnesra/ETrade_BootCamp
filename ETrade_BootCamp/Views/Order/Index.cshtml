@@ -1,0 +1,43 @@
+﻿@using ETrade_BootCamp.ViewModels
+
+@{
+    ViewData["Title"] = "Order";
+}
+
+@model List<OrderDTO>
+
+<div class="text-center">
+    <h1 class="display-4">Sipariş Listesi</h1>
+</div>
+
+<table class=" table table-bordered">
+    <thead>
+        <tr>    
+            <th>SiparişNo </th>
+            <th>Sipariş Tarihi </th>
+            <th>Sipariş Verilen Ülke</th>
+            <th>Birim Fiyat </th>
+            <th>Miktar </th>
+            <th>İndirim Oranı </th>
+            <th>Sipariş Toplam Tutar </th>
+            <th>Ürünler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.OrderId </td>
+                <td>@order.ShippedDate </td>
+                <td>@order.ShipCountry </td>
+                <td>@order.UnitPrice </td>
+                <td>@order.Quantity </td>
+                <td>@order.Discount </td>
+                <td>@order.TotalPrice </td>
+                <td><a asp-action="Index" asp-controller="Product" asp-route-orderId="@order.OrderId" class="btn btn-primary">Ürünler</a> </td>
+                @*<td>@Html.ActionLink("Ürünler", "Index","Product", new { orderId = order.OrderId }, new { @class = "btn btn-danger" })  </td>*@
+              
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,29 @@
+﻿@using ETrade_BootCamp.ViewModels
+
+@{
+    ViewData["Title"] = "Product";
+}
+
+@model List<ProductDTO>
+
+<div class="text-center">
+    <h1 class="display-4">Ürünler Listesi</h1>
+</div>
+
+<table class=" table table-bordered">
+    <thead>
+        <tr>
+            <th>Ürün İsmi </th>
+            <th>Sipariş Verilen Miktar</th>       
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.ProductName </td>
+                <td>@product.QuantityPerUnit </td>       
+            </tr>
+        }
+    </tbody>
+</table>

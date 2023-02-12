@@ -1,0 +1,32 @@
+﻿@using ETrade_BootCamp.ViewModels
+
+@{
+    ViewData["Title"] = "Territory";   //Layout syafaındaki ViewData kısmını bu değerle doldurur
+}
+
+@model List<TerritoryDTO>
+
+<div class="text-center">
+    <h1 class="display-4">@Model.FirstOrDefault().FirstName Çalışanının Sorumlu olduğu Bölgeler Listesi</h1>
+</div>
+
+<table class=" table table-bordered">
+    <thead>
+        <tr>
+            <th>Ad </th>
+            <th>Soyad </th>
+            <th>Sorumlu olduğu Bölgeler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var territory in Model)
+        {
+            <tr>
+                <td>@territory.FirstName </td>
+                <td>@territory.LastName </td>
+                <td>@territory.RegionDescription </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
