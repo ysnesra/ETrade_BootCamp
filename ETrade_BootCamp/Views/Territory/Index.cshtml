@@ -1,20 +1,38 @@
 ﻿@using ETrade_BootCamp.ViewModels
 
 @{
-    ViewData["Title"] = "Territory";   //Layout syafaındaki ViewData kısmını bu değerle doldurur
+    ViewData["Title"] = "Territory";   //Layout sayfasındaki ViewData kısmını bu değerle doldurur
 }
 
-@model List<TerritoryDTO>
+@model List<TerritoryListViewModel>
 
-<div class="text-center">
-    <h1 class="display-4">@Model.FirstOrDefault().FirstName Çalışanının Sorumlu olduğu Bölgeler Listesi</h1>
+@if(Model.Count == 0){   //EmployeeId si olmayan bir Id gelirse örneğin yeni bir çalışan siparşi olmayabilir
+    <p>Kayıt bulunamadı</p>
+}
+else
+{
+
+    <h2>@Model[0].Employee Adlı Çalışanın Bölgeleri</h2>
+    @*<div class="text-center">
+        <h1 class="display-4">@Model.FirstOrDefault().Employee Çalışanının Sorumlu olduğu Bölgeler Listesi</h1>
+    </div>*@
+
+    <ul class="list-group">
+        @foreach (TerritoryListViewModel item in Model)
+        {
+            <li class="list-group-item">@item.Territory / @item.Region</li>
+        }
+    </ul>
+}
+
+@*<div class="text-center">
+    <h1 class="display-4">@Model.FirstOrDefault().Employee Çalışanının Sorumlu olduğu Bölgeler Listesi</h1>
 </div>
 
 <table class=" table table-bordered">
     <thead>
         <tr>
-            <th>Ad </th>
-            <th>Soyad </th>
+            <th>Personel </th>
             <th>Sorumlu olduğu Bölgeler</th>
         </tr>
     </thead>
@@ -22,11 +40,11 @@
         @foreach (var territory in Model)
         {
             <tr>
-                <td>@territory.FirstName </td>
-                <td>@territory.LastName </td>
-                <td>@territory.RegionDescription </td>
+                <td>@territory.Employee </td>
+                <td>@territory.Territory / @territory.Region </td>
             </tr>
         }
     </tbody>
-</table>
+</table>*@
+
 

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ETrade_BootCamp.Controllers
 {
@@ -13,10 +13,10 @@ namespace ETrade_BootCamp.Controllers
         NorthwindContext context = new NorthwindContext();
 
         //EmployeesList
-        public IActionResult Index()
+        public IActionResult List()
         {
-            List<EmployeeDTO> employeesDto = new List<EmployeeDTO>();
-            employeesDto = context.Employees.Select(x => new EmployeeDTO
+            List<EmployeeListViewModel> employeesDto = new List<EmployeeListViewModel>();
+            employeesDto = context.Employees.Select(x => new EmployeeListViewModel
             {
                 EmployeeId = x.EmployeeId,
                 FirstName = x.FirstName,
@@ -41,12 +41,23 @@ namespace ETrade_BootCamp.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View("EmployeeForm", new EmployeeDTO() );
+            //Seçim listesi kutucuğu oluşturma:
+            //SelectListItem hazır metodumuzdan instance oluşturup içini doldurup ViewBag ile EmployeeForm view sayfasına taşırız
+            //Personel listesindeki herkes yeni eklenen kişinin amiri olabilir.Kişilerin hepsini seçim kutusuna liste olrak getirelim:
+            List<SelectListItem> selectList= new List<SelectListItem>();
+            foreach(var item in context.Employees.Select (a => new {a.EmployeeId, a.FirstName, a.LastName }))
+            {
+                selectList.Add(new SelectListItem() { Text = item.FirstName + " " + item.LastName, Value = item.EmployeeId.ToString() });
+            }
+
+            ViewBag.Employees = selectList;
+
+            return View("EmployeeForm", new EmployeeCreateViewModel() );
         }
 
         //Yeni Çalışan FormEkranından Ekleme
         [HttpPost]
-        public IActionResult Create(EmployeeDTO employeeModel)
+        public IActionResult Create(EmployeeListViewModel employeeModel)
         {
             if (ModelState.IsValid)
             {
@@ -57,10 +68,10 @@ namespace ETrade_BootCamp.Controllers
                     Title = employeeModel.Title,
                 });
                 context.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(List));
 
             }
-            return View("EmployeeForm", new EmployeeDTO());
+            return View("EmployeeForm", new EmployeeListViewModel());
         }
         //public IActionResult Create(EmployeeDTO employeeModel)
         //{

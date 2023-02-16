@@ -1,4 +1,4 @@
-﻿@model ETrade_BootCamp.ViewModels.EmployeeDTO
+﻿@model ETrade_BootCamp.ViewModels.EmployeeCreateViewModel
 
 <h2>Personel Formu</h2>
 
@@ -11,6 +11,14 @@
 
     <label for="Title">Ünvan</label>
     <input asp-for="Title" class="form-control" />
+    <br />
+
+    @*****Seçim listesi oluşturma*****@
+    <label for="Reports">Amiri</label>
+    <select asp-for="Reports" asp-items="ViewBag.Employees">
+        <option value="0">Bir amir seçiniz</option>
+    </select>
+    <br />
 
     <br />
     <button type="submit" class="btn btn-dark">Kaydet</button>

@@ -4,7 +4,12 @@
     ViewData["Title"] = "Product";
 }
 
-@model List<ProductDTO>
+
+@model List<ProductListViewModel>
+
+@*Controllerdan ViewBag ile gelen içi dolu veriyi View kısmında ekrana yazdırıyoruz*@
+<h2>@ViewBag.OrderNo nolu Siparişin Ürünleri</h2>    
+@*<h2>@ViewContext.RouteData.Values["id"] nolu Siparişin Ürünleri</h2>*@
 
 <div class="text-center">
     <h1 class="display-4">Ürünler Listesi</h1>
@@ -22,7 +27,7 @@
         {
             <tr>
                 <td>@product.ProductName </td>
-                <td>@product.QuantityPerUnit </td>       
+                <td>@product.Quantity </td>       
             </tr>
         }
     </tbody>

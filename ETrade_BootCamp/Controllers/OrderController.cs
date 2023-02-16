@@ -2,6 +2,7 @@
 using ETrade_BootCamp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
 
@@ -12,42 +13,60 @@ namespace ETrade_BootCamp.Controllers
         NorthwindContext context = new NorthwindContext();
 
         //OrdersList
-        public IActionResult Index(int employeeId)
-        {       
-            var query = (from o in context.Orders
-                        join e in context.Employees on o.EmployeeId equals e.EmployeeId
-                        join od in context.OrderDetails on o.OrderId equals od.OrderId
-                        where o.EmployeeId == employeeId 
-                        select new OrderDTO
-                        {
-                            EmployeeId=e.EmployeeId,
-                            OrderId = o.OrderId,
-                            ShippedDate = o.ShippedDate,
-                            ShipCountry = o.ShipCountry,
-                            UnitPrice = od.UnitPrice,
-                            Quantity = od.Quantity,
-                            Discount = od.Discount,
-                            TotalPrice =(od.UnitPrice-(od.UnitPrice *(decimal)od.Discount))*od.Quantity
-                        }).ToList();
+        public IActionResult Index(int employeeId)  //employeeId bu id ile
+        {   
+            if(employeeId == 0)  
+            {
+                return RedirectToAction("List","Employee");//EmployeeList ekranına dönsün
+            }
 
-            return View(query);
+            //Method Expression- EagerLoading ********
+            //EmployeeId; OrderDetails tablosunda zaten var Employee tablosunu ilişkilendirmeye gerek yok 
+            //Discount => Kdv hesaplanırken 1 den çıkarılıp çarpılır.
+            //veritabanındaki OrderDetails tablosundan verileri çekip hesaplayıp modelimizdeki TotalPrice a atarız
 
-            //Method Expression doğru olmadı
-            //var model = context.Employees.Include(e => e.Orders).ThenInclude(o => o.OrderDetails)
-            //    .Where(x => x.EmployeeId == employeeId).Select(x => new OrderDTO
-            //    {
-            //        EmployeeId = x.EmployeeId,
-            //        OrderId = x.Orders.FirstOrDefault().OrderId,
-            //        ShippedDate = x.OrderDetails.ShippedDate,
-            //        ShipCountry = e.ShipCountry,
-            //        UnitPrice = o.UnitPrice,
-            //        Quantity = o.Quantity,
-            //        Discount = o.Discount,
-            //        TotalPrice = (od.UnitPrice - (od.UnitPrice * (decimal)od.Discount)) * od.Quantity
-            //    }).ToList();
-            //return View(model);
+            List<OrderListViewModel> orders = context.Orders.Include(a => a.OrderDetails).Where(a => a.EmployeeId == employeeId).Select(a => new OrderListViewModel
+            {
+                OrderNo = a.OrderId,
+                OrderCountry = a.ShipCountry,
+                OrderDate = a.ShippedDate.HasValue ? a.OrderDate.Value.ToShortDateString() : "Tarihi Yok",
+                TotalPrice = a.OrderDetails.Sum(od => od.Quantity * od.UnitPrice * (1 - (decimal)od.Discount))
+            }).ToList();
 
-           
+            return View(orders);
+
+            //****Eğer Sipraiş listesinde OrderDetails tablosundaki UnitPrice ,Quantity,Discount kolonlarını da görmek isteseydik:
+            //ManyToMany ilişkiden dolayı SelectMany() kullanmalıyız
+            //List<OrderListViewModel> orders = context.Orders.Include(a => a.OrderDetails).Where(a => a.EmployeeId == employeeId).SelectMany(a => a.OrderDetails, (o, d) => new OrderListViewModel() 
+            //{
+            //    OrderNo = o.OrderId,
+            //    OrderCountry = o.ShipCountry,
+            //    OrderDate = o.ShippedDate.HasValue ? o.OrderDate.Value.ToShortDateString() : "Tarihi Yok",
+            //    UnitPrice=d.UnitPrice,
+            //    Quantity = d.Quantity,
+            //    Discount = d.Discount,
+            //    TotalPrice = o.OrderDetails.Sum(od => od.Quantity * od.UnitPrice * (1 - (decimal)od.Discount))
+            //}).ToList();
+            //return View(orders);
+
+
+            //****Joinle yazmak mantıklı değil burda Include ile yazmak doğru
+            //var query = (from o in context.Orders
+            //             join od in context.OrderDetails on o.OrderId equals od.OrderId
+            //             where o.EmployeeId == employeeId
+            //             select new OrderListViewModel
+            //             {
+            //                 OrderNo = o.OrderId,
+            //                 OrderDate = o.ShippedDate.Value.ToShortDateString(),
+            //                 OrderCountry = o.ShipCountry,
+            //                 UnitPrice = od.UnitPrice,
+            //                 Quantity = od.Quantity,
+            //                 Discount = od.Discount,
+            //                 TotalPrice = (od.UnitPrice - (od.UnitPrice * (decimal)od.Discount)) * od.Quantity
+            //             }).ToList();
+            //return View(query);
+
+
         }
     }
 }
