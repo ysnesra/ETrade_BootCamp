@@ -7,5 +7,7 @@
         public string LastName { get; set; } = null!;
         public string? Title { get; set; }
 
+        public int Reports { get; set; }   //personelin amiri bilgiside girilsin
+
     }
 }

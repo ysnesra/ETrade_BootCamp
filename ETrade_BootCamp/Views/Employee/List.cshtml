@@ -30,7 +30,9 @@
                 <td>@employee.FirstName </td>
                 <td>@employee.LastName </td>
                 <td>@employee.Title </td>               
-                <td><a asp-action="Index" asp-controller="Order" asp-route-employeeId="@employee.EmployeeId" class="btn btn-warning">Siparişleri</a></td>
+                <td><a asp-action="Index" asp-controller="Order" asp-route-employeeId="@employee.EmployeeId" 
+                    asp-route-name= "@employee.FirstName" asp-route-surname= "@employee.LastName"
+                    class="btn btn-warning">Siparişleri</a></td>
                 <td><a asp-action="Index" asp-controller="Territory" asp-route-employeeId="@employee.EmployeeId" class="btn btn-success">Sorumlu Bölgeleri</a></td>               
                 @*<td>@Html.ActionLink("Siparişleri", "Index","Order", new { employeeId = employee.EmployeeId }, new { @class = "btn btn-warning" })  </td>*@
                 @*<td>@Html.ActionLink("Sorumlu Bölgeleri", "Index","Territory", new { employeeId = employee.EmployeeId }, new { @class = "btn btn-primary" }) </td>*@

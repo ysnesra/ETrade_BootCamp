@@ -7,6 +7,16 @@
         public string LastName { get; set; } = null!;
         public string? Title { get; set; }
         public int Reports { get; set; }   //personelin amiri bilgiside girilsin
+
+        public List<EmployeeTerritoryViewModel> Territories { get; set; }
+    }
+
+    //Bölgeleri seçeceği için ayrı bir viewmodel oluştururuz
+    public class EmployeeTerritoryViewModel
+    {
+        public string TerritoryID { get; set; }
+        public string Name { get; set; }
+        public bool IsSelected { get; set; }  //Checkbox ın seçilip seçilmediğni tutmak için bool bir property oluşturuduk
     }
 }
 

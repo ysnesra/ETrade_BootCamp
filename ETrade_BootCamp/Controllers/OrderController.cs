@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Linq;
+using X.PagedList;
 
 namespace ETrade_BootCamp.Controllers
 {
@@ -13,11 +14,11 @@ namespace ETrade_BootCamp.Controllers
         NorthwindContext context = new NorthwindContext();
 
         //OrdersList
-        public IActionResult Index(int employeeId)  //employeeId bu id ile
+        public IActionResult Index(int employeeId, int page=1)  //employeeId bu id ile
         {   
             if(employeeId == 0)  
             {
-                return RedirectToAction("List","Employee");//EmployeeList ekranına dönsün
+                return RedirectToAction("List","Employee",employeeId);//EmployeeList ekranına dönsün
             }
 
             //Method Expression- EagerLoading ********
@@ -25,17 +26,27 @@ namespace ETrade_BootCamp.Controllers
             //Discount => Kdv hesaplanırken 1 den çıkarılıp çarpılır.
             //veritabanındaki OrderDetails tablosundan verileri çekip hesaplayıp modelimizdeki TotalPrice a atarız
 
-            List<OrderListViewModel> orders = context.Orders.Include(a => a.OrderDetails).Where(a => a.EmployeeId == employeeId).Select(a => new OrderListViewModel
+            //******SAYFALAMA____sipariş listesini 10tane 10tane göstermesini sağlayabilriz. 
+            IPagedList<OrderListViewModel> orders = context.Orders.Include(a => a.OrderDetails).Where(a => a.EmployeeId == employeeId).Select(a => new OrderListViewModel
             {
                 OrderNo = a.OrderId,
                 OrderCountry = a.ShipCountry,
                 OrderDate = a.ShippedDate.HasValue ? a.OrderDate.Value.ToShortDateString() : "Tarihi Yok",
                 TotalPrice = a.OrderDetails.Sum(od => od.Quantity * od.UnitPrice * (1 - (decimal)od.Discount))
-            }).ToList();
+            }).ToPagedList(page,10);
+
+            ViewBag.employeeId=employeeId;
+            //List<OrderListViewModel> orders = context.Orders.Include(a => a.OrderDetails).Where(a => a.EmployeeId == employeeId).Select(a => new OrderListViewModel
+            //{
+            //    OrderNo = a.OrderId,
+            //    OrderCountry = a.ShipCountry,
+            //    OrderDate = a.ShippedDate.HasValue ? a.OrderDate.Value.ToShortDateString() : "Tarihi Yok",
+            //    TotalPrice = a.OrderDetails.Sum(od => od.Quantity * od.UnitPrice * (1 - (decimal)od.Discount))
+            //}).ToList();
 
             return View(orders);
 
-            //****Eğer Sipraiş listesinde OrderDetails tablosundaki UnitPrice ,Quantity,Discount kolonlarını da görmek isteseydik:
+            //****Eğer Sipariş listesinde OrderDetails tablosundaki UnitPrice ,Quantity,Discount kolonlarını da görmek isteseydik:
             //ManyToMany ilişkiden dolayı SelectMany() kullanmalıyız
             //List<OrderListViewModel> orders = context.Orders.Include(a => a.OrderDetails).Where(a => a.EmployeeId == employeeId).SelectMany(a => a.OrderDetails, (o, d) => new OrderListViewModel() 
             //{

@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ETrade_BootCamp.Controllers
 {
-    public class EmployeeController : Controller
+    public class EmployeeController : EtradeBaseController
     {
-        NorthwindContext context = new NorthwindContext();
+       //NorthwindContext context = new NorthwindContext();
 
         //EmployeesList
         public IActionResult List()
@@ -44,34 +44,80 @@ namespace ETrade_BootCamp.Controllers
             //Seçim listesi kutucuğu oluşturma:
             //SelectListItem hazır metodumuzdan instance oluşturup içini doldurup ViewBag ile EmployeeForm view sayfasına taşırız
             //Personel listesindeki herkes yeni eklenen kişinin amiri olabilir.Kişilerin hepsini seçim kutusuna liste olrak getirelim:
-            List<SelectListItem> selectList= new List<SelectListItem>();
-            foreach(var item in context.Employees.Select (a => new {a.EmployeeId, a.FirstName, a.LastName }))
-            {
-                selectList.Add(new SelectListItem() { Text = item.FirstName + " " + item.LastName, Value = item.EmployeeId.ToString() });
-            }
+            //List<SelectListItem> selectList= new List<SelectListItem>();
+            
+            //foreach(var item in context.Employees.Select (a => new {a.EmployeeId, a.FirstName, a.LastName }))
+            //{
+            //    selectList.Add(new SelectListItem() { Text = item.FirstName + " " + item.LastName, Value = item.EmployeeId.ToString() });
+            //}
 
-            ViewBag.Employees = selectList;
+            //ViewBag.Employees = selectList;
 
-            return View("EmployeeForm", new EmployeeCreateViewModel() );
+            //SelectList kodlarımızı EmployeeViewComponente taşıdık
+
+            return View("EmployeeFormFirst", new EmployeeCreateViewModel() );
         }
 
         //Yeni Çalışan FormEkranından Ekleme
         [HttpPost]
-        public IActionResult Create(EmployeeListViewModel employeeModel)
+        public IActionResult Create(EmployeeCreateViewModel employeeModel)
         {
-            if (ModelState.IsValid)
-            {
-                context.Employees.Add(new Employee
-                {
-                    FirstName = employeeModel.FirstName,
-                    LastName = employeeModel.LastName,
-                    Title = employeeModel.Title,
-                });
-                context.SaveChanges();
-                return RedirectToAction(nameof(List));
+            //Sesiondaki veri varsa birinci ekrandan geliyor,
+            //Veri yoksa birinci ekrana ilk defa geliyor
 
+            if (IsExistInSession("NewEmp"))  //Session doluysa ikinci ekran birinci ekrandan geliyordur
+            {
+                Employee employee = GetValueFromSession<Employee>("NewEmp");  //Sessiondaki NewEmp içindeki datayı aldık
+                IEnumerable<string> selectedIDs = employeeModel.Territories.Where(a => a.IsSelected).Select(a => a.TerritoryID);  //IsSelected true olanların TerritoryID lerini listele 
+
+                foreach (Territory item in context.Territories.Where(a => selectedIDs.Contains(a.TerritoryId)))
+                {
+                    employee.Territories.Add(item);
+                }
+
+                context.Employees.Add(employee);
+                context.SaveChanges();
+
+                ClearSession("NewEmp");
+
+                return RedirectToAction(nameof(List));
             }
-            return View("EmployeeForm", new EmployeeListViewModel());
+            else   //birinci ekran ilk defa geliyor
+            {
+                Employee employee = new Employee();             
+                employee.FirstName = employeeModel.FirstName;
+                employee.LastName = employeeModel.LastName;
+                employee.Title = employeeModel.Title;
+                employee.ReportsTo = employeeModel.Reports;
+
+                SetValueToSession<Employee>("NewEmp", employee);
+
+                //Modelden gelen Territories listesini; veritabanındaki değerlerle dolduralım
+                employeeModel.Territories = context.Territories.Select(a => new EmployeeTerritoryViewModel()
+                {
+                    IsSelected = false,
+                    Name = a.TerritoryDescription,
+                    TerritoryID = a.TerritoryId
+                }).ToList();
+
+                return View("EmployeeFormSecond", employeeModel /*new EmployeeCreateViewModel()*/);
+            }
+
+            //İlk yaptığım
+            //if (ModelState.IsValid)
+            //{
+            //    context.Employees.Add(new Employee
+            //    {
+            //        FirstName = employeeModel.FirstName,
+            //        LastName = employeeModel.LastName,
+            //        Title = employeeModel.Title,
+            //        ReportsTo=employeeModel.Reports
+            //    });
+            //    context.SaveChanges();
+            //    return RedirectToAction(nameof(List));
+
+            //}
+            //return View("EmployeeForm", new EmployeeListViewModel());
         }
         //public IActionResult Create(EmployeeDTO employeeModel)
         //{

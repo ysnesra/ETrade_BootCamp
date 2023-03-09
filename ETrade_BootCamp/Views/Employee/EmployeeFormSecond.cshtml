@@ -1,0 +1,22 @@
+﻿@model EmployeeCreateViewModel
+
+<p>Sorumlu olduğu bölgeleri seçin</p>
+
+<form asp-action="Create">
+    @*@foreach (var item in Model.Territories)
+    {
+    <input asp-for="@item.IsSelected" /> @item.Name
+    <br />
+    }*@
+
+    @for (int i = 0; i < Model.Territories.Count; i++)
+    {
+        <input asp-for="@Model.Territories[i].IsSelected" /> @Model.Territories[i].Name
+        <input type="hidden" asp-for="@Model.Territories[i].TerritoryID" />
+        <br />
+        //IsSelected ı true olanların TerritoryID bilgisini okucaz
+    }
+
+    <button>Kaydet</button>
+
+</form>

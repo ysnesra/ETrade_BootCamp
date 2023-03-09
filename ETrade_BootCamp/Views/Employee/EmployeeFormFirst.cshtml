@@ -14,16 +14,26 @@
     <br />
 
     @*****Seçim listesi oluşturma*****@
-    <label for="Reports">Amiri</label>
+    @*<label for="Reports">Amiri</label>
     <select asp-for="Reports" asp-items="ViewBag.Employees">
         <option value="0">Bir amir seçiniz</option>
     </select>
-    <br />
+    <br />*@
+
+    @await Component.InvokeAsync("Employee"/*, new{employeeID=Model.EmployeeID, reportsID=Model.ReportsTo}*/)
+   @*Güncelleme yaparken new deyip değerleri de veririz*@
 
     <br />
-    <button type="submit" class="btn btn-dark">Kaydet</button>
+    <button type="submit" class="btn btn-dark">Devam</button>
 
 </form>
+
+<partial name="_ValidationScriptsPartial" />
+
+
+
+
+
 
 @*
 @using (Html.BeginForm("Create", "Employee", FormMethod.Post))
