@@ -1,5 +1,6 @@
 # ETrade_BootCamp
 Northwind veritabanı üzerinde çalışan bir MVC CORE uygulamasıdır
+Bu uygulama techcareer.net BootCampında ödev olarak verildi
 //Method Expression- Query Expression yöntemleriyle LINQ kodları yazarak ekrana verileri listelettiğm bir uygulama oldu.
 
 Uygulamanın akışı ve ekranları aşağıdaki gibidir:
