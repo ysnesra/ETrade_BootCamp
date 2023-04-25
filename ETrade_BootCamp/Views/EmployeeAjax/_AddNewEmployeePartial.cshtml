@@ -1,0 +1,57 @@
+﻿@model ETrade_BootCamp.ViewModels.EmployeeCreateViewModel
+
+
+@*
+     modal popup ın body kısmı(içeriği) ajax ile yüklenecek
+     Bilgileri doldurup Kaydet tiğimizde doldurduğumuz form ajax ile gidecek
+ *@
+
+
+<div class="modal-header">
+    <h1 class="modal-title fs-5">Yeni Personel Ekleme Formu</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+
+    <form id="formAddNewEmployee" asp-action="AddNewEmployeePartial" asp-controller="EmployeeAjax"
+          data-ajax="true" data-ajax-method="post" data-ajax-update="#modalAddContent">
+
+        <label for="FirstName">Ad</label>
+        <input asp-for="FirstName" class="form-control" />
+
+        <label for="LastName">Soyad</label>
+        <input asp-for="LastName" class="form-control" />
+
+        <label for="Title">Ünvan</label>
+        <input asp-for="Title" class="form-control" />
+        <br />
+
+        @*****Seçim listesi oluşturma*****@
+        <label for="Reports">Amiri</label>
+        <select asp-for="Reports" asp-items="ViewBag.Employees">
+            <option value="0">Bir amir seçiniz</option>
+        </select>
+        <br />
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Kapat</button>
+    <button type="submit" class="btn btn-primary btn-sm" form="formAddNewEmployee"><i class="fa fa-save me-2"></i>Kaydet</button>  @* formun dışındaki bu save butonunun formu tetikleyebilmesi için formun id sini butuna tanımlarız( form="frmAddNewEmployee" ile)*@
+</div>
+
+
+@*Insert olduktan sonrada bu partialı yüklüyorum. Yüklerken JavaScript kodumuzda çalışsın.*@
+@*Modal penceresi kapansın istiyorum*@
+
+@if (string.IsNullOrEmpty(Model.Done) == false)    //Modeldeki Done null yada boş değilse if in içine girecek//Yani ekleme işlemi başarılı ise
+{
+    <script>
+        $("#modalAdd").modal("hide"); @*id si "modalAdd" olan modal penceresini kapat gizle *@
+        toastr.success('@Model.Done', "Kullanıcı başarılı bir şekilde kaydedildi")
+        refresh.click(); @*reload butonuna otomatik basılmasını sağlayıp sayfayı yeniliyor*@
+    </script>
+}
+
+
+

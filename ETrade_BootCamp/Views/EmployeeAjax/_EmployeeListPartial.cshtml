@@ -1,0 +1,46 @@
+﻿@model List<EmployeeListViewModel>
+
+
+@*<a asp-action="Create" asp-controller="Employee" class="btn btn-danger">Yeni Personel</a>*@
+
+<table class="table table-striped">
+    @*table-bordered*@
+    <thead>
+        <tr>
+            <th>Ad </th>
+            <th>Soyad </th>
+            <th>Ünvan</th>
+            <th></th>
+            <th></th>
+            <th>Siparişler </th>
+            <th>Sorumlu Olduğu Bölgeler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (EmployeeListViewModel employee in Model)
+        {
+            <tr>
+                <td>@employee.FirstName </td>
+                <td>@employee.LastName </td>
+                <td>@employee.Title </td>
+                <td>
+                    <a asp-action="EditEmployeePartial" asp-controller="EmployeeAjax" asp-route-employeeId="@employee.EmployeeId" data-bs-toggle="modal" data-bs-target="#modalEdit"
+                   data-ajax="true" data-ajax-method="get" data-ajax-update="#modalEditContent"
+                   class="btn btn-info btn-sm text-white"><i class="fa fa-edit me-2"></i>Güncelle</a>
+                </td>
+                <td>
+                    <a asp-action="DeleteEmployeePartial" asp-controller="EmployeeAjax" asp-route-employeeId="@employee.EmployeeId"
+                   data-ajax-confirm="@employee.FirstName adlı kullanıcıyı silmek istediğine emin misin?"
+                   data-ajax="true" data-ajax-method="get" data-ajax-update="#panel" class="btn btn-danger">Sil</a>
+                </td>
+                <td><a asp-action="Index" asp-controller="Order" asp-route-employeeId="@employee.EmployeeId" class="btn btn-warning">Siparişleri</a></td>
+                <td><a asp-action="Index" asp-controller="Territory" asp-route-employeeId="@employee.EmployeeId" class="btn btn-success">Sorumlu Bölgeleri</a></td>
+                @*<td>@Html.ActionLink("Siparişleri", "Index","Order", new { employeeId = employee.EmployeeId }, new { @class = "btn btn-warning" })  </td>*@
+                @*<td>@Html.ActionLink("Sorumlu Bölgeleri", "Index","Territory", new { employeeId = employee.EmployeeId }, new { @class = "btn btn-primary" }) </td>*@
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+
