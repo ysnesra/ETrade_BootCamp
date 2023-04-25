@@ -28,4 +28,20 @@ Refactoring işlemleri yapıldı:
 * Personel eklerken adım adım ekleme(farklı sayfalarda) işlemi yapıldı.İkinci ekranda CheckBox ile Terrirory seçilerek eklenecek
   EmployeeForm ekranı iki ekrana ayrılıp EmployeeFormFirst ve EmployeeFormSecond ekranlarından geçip kaydedildi.
   EmployeeController -> Create actionı Sessionın dolu gelip gelmemseine göre iki ekranda da çağırılıyor
+  
+ *********************************************** 
+  2.Kez Refactoring İşlemleri yapıldı:
+
+* AutoMapper kütüphanesi eklendi.
+  Db deki tablo ile viewModel clasını eşleştirip verileri aktarır.
+  Bu eşleştirmeyi yapmak içn AutoMapperConfig clası oluşturuldu.
+  program.cs de AutoMapper Sevice i aktifleştirildi.
+
+* Personel Güncelle ve Sil butonları eklendi
+
+* Normal CRUD işlemleri yapıldı. -> EmployeeController'da
+
+* Ajax ile CRUD işlemleri yapıldı. -> EmployeeAjaxController'da
+
+  Data-> Json olarak değil , PartialView olarak çekildi.
 
