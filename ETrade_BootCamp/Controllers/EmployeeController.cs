@@ -5,36 +5,37 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using AutoMapper;
 
 namespace ETrade_BootCamp.Controllers
 {
     public class EmployeeController : EtradeBaseController
     {
-       //NorthwindContext context = new NorthwindContext();
+        private readonly NorthwindContext _context;
+        private readonly IMapper _mapper;
+
+        public EmployeeController(IMapper mapper, NorthwindContext context)
+        {
+            _mapper = mapper;
+            _context = context;
+        }
 
         //EmployeesList
         public IActionResult List()
         {
-            List<EmployeeListViewModel> employeesDto = new List<EmployeeListViewModel>();
-            employeesDto = context.Employees.Select(x => new EmployeeListViewModel
-            {
-                EmployeeId = x.EmployeeId,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                Title = x.Title,
-            }).ToList();
+            //List<EmployeeListViewModel> employeesDto = new List<EmployeeListViewModel>();
+            //employeesDto = context.Employees.Select(x => new EmployeeListViewModel
+            //{
+            //    EmployeeId = x.EmployeeId,
+            //    FirstName = x.FirstName,
+            //    LastName = x.LastName,
+            //    Title = x.Title,
+            //}).ToList();
+            List<EmployeeListViewModel> employeesDto = _context.Employees.ToList().Select(x => _mapper.Map<EmployeeListViewModel>(x)).ToList();
 
             return View(employeesDto);
 
-            //Query Expression
-            //var query = (from e in context.Employees
-            //             select new EmployeeDTO()
-            //             {
-            //                FirstName = e.FirstName,
-            //                LastName = e.LastName,
-            //                Title = e.Title,
-            //             }).ToList();
-            //return View(query);
+           
         }
 
         //Yeni Çalışan FormEkranı
@@ -119,17 +120,60 @@ namespace ETrade_BootCamp.Controllers
             //}
             //return View("EmployeeForm", new EmployeeListViewModel());
         }
-        //public IActionResult Create(EmployeeDTO employeeModel)
-        //{
-        //    Employee employee = new Employee();
-        //    employee.EmployeeId = employeeModel.EmployeeId;
-        //    employee.FirstName = employeeModel.FirstName;
-        //    employee.LastName = employeeModel.LastName;
-        //    employee.Title = employeeModel.Title;
-        //    context.Employees.Add(employee);
-        //    context.SaveChanges();
-        //    return RedirectToAction("Index");
-        //}
+
+
+        //Çalışan Güncelleme Form Ekranı
+        [HttpGet]
+        public IActionResult Edit(int employeeId)
+        {
+            List<SelectListItem> selectList = new List<SelectListItem>();
+            foreach (var item in _context.Employees.Select(a => new { a.EmployeeId, a.FirstName, a.LastName }))
+            {
+                selectList.Add(new SelectListItem() { Text = item.FirstName + " " + item.LastName, Value = item.EmployeeId.ToString() });
+            }
+            ViewBag.Employees = selectList;
+
+
+            Employee employee = _context.Employees.Find(employeeId);
+            EmployeeEditViewModel model = _mapper.Map<EmployeeEditViewModel>(employee);
+
+            return View("EmployeeFormEdit", model);
+        }
+
+        //Çalışan Güncelleme 
+        [HttpPost]
+        public IActionResult Edit(int employeeId, EmployeeEditViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Employee employee = _context.Employees.Find(employeeId); //veritabnından personeli bul
+                _mapper.Map(model, employee);  //modelde yeni girilen değerleri employee'ye kopyala
+                _context.SaveChanges();
+                return RedirectToAction(nameof(List));
+            }
+            return View("EmployeeFormEdit", model);
+        }
+
+        //raw sql kullanarak dark olarak silelim
+        //ilişkili olduğu tüm tablolardan tek tek sileriz
+        public IActionResult Delete(int employeeId)
+        {
+            var rowsExisted = _context.Database
+                                .ExecuteSqlRaw($"SELECT COUNT(*) FROM Employees WHERE EmployeeId='{employeeId}'");
+            if (rowsExisted == -1)
+            {
+                var EmployeeTerritoriesdeleted = _context.Database
+               .ExecuteSqlRaw($"DELETE FROM EmployeeTerritories WHERE EmployeeId='{employeeId}'");
+
+                var Ordersdeleted = _context.Database
+              .ExecuteSqlRaw($"DELETE FROM Orders WHERE EmployeeId='{employeeId}'");
+
+                var Employeesdeleted = _context.Database
+               .ExecuteSqlRaw($"DELETE FROM Employees WHERE EmployeeId='{employeeId}'");
+            }
+            return RedirectToAction(nameof(List));
+        }
+
 
     }
 }

@@ -19,6 +19,8 @@
             <th>Ad </th>
             <th>Soyad </th>
             <th>Ünvan</th>
+            <th></th>
+            <th></th>
             <th>Siparişler </th>
             <th>Sorumlu Olduğu Bölgeler</th>
         </tr>
@@ -29,11 +31,22 @@
             <tr>
                 <td>@employee.FirstName </td>
                 <td>@employee.LastName </td>
-                <td>@employee.Title </td>               
+                <td>@employee.Title </td>
+
+                <td>
+                    <a asp-action="Edit" asp-controller="Employee" asp-route-employeeId="@employee.EmployeeId" class="btn btn-info text-white">Güncelle</a>
+                </td>
+                <td>
+                    <a asp-action="Delete" asp-controller="Employee" asp-route-employeeId="@employee.EmployeeId"
+                   onclick="return confirm('@employee.FirstName adlı kullanıcıyı silmek istediğine emin misin?')" class="btn btn-danger">Sil</a>
+                </td>
+
                 <td><a asp-action="Index" asp-controller="Order" asp-route-employeeId="@employee.EmployeeId" 
                     asp-route-name= "@employee.FirstName" asp-route-surname= "@employee.LastName"
                     class="btn btn-warning">Siparişleri</a></td>
-                <td><a asp-action="Index" asp-controller="Territory" asp-route-employeeId="@employee.EmployeeId" class="btn btn-success">Sorumlu Bölgeleri</a></td>               
+                <td>
+                    <a asp-action="Index" asp-controller="Territory" asp-route-employeeId="@employee.EmployeeId" class="btn btn-success">Sorumlu Bölgeleri</a>
+                </td>               
                 @*<td>@Html.ActionLink("Siparişleri", "Index","Order", new { employeeId = employee.EmployeeId }, new { @class = "btn btn-warning" })  </td>*@
                 @*<td>@Html.ActionLink("Sorumlu Bölgeleri", "Index","Territory", new { employeeId = employee.EmployeeId }, new { @class = "btn btn-primary" }) </td>*@
 
